@@ -1,0 +1,290 @@
+/*
+Theme Name: My First Theme
+Text Domain: My First Theme
+Version: 0.1
+Requires at least: 4.7
+Requires PHP: 5.2.4
+Description: 初めてのテンプレート
+Author: h23k
+Author URI: https://localhost:8000/
+Theme URI: https://localhost:8000/themes/myfirsttheme/
+License: GNU General Public License v2 or later
+License URI: http://www.gnu.org/licenses/gpl-2.0.html
+
+All files, unless otherwise stated, are released under the GNU General Public
+License version 2.0 (http://www.gnu.org/licenses/gpl-2.0.html)
+
+This theme, like WordPress, is licensed under the GPL.
+Use it to make something cool, have fun, and share what you've learned
+with others.
+*/
+
+/*
+html5doctor.com Reset Stylesheet
+v1.6.1
+Last Updated: 2010-09-17
+*/
+
+html, body, div, span, object, iframe,
+h1, h2, h3, h4, h5, h6, p, blockquote, pre,
+abbr, address, cite, code,
+del, dfn, em, img, ins, kbd, q, samp,
+small, strong, sub, sup, var,
+b, i,
+dl, dt, dd, ol, ul, li,
+fieldset, form, label, legend,
+table, caption, tbody, tfoot, thead, tr, th, td,
+article, aside, canvas, details, figcaption, figure,
+footer, header, hgroup, menu, nav, section, summary,
+time, mark, audio, video {
+    margin:0;
+    padding:0;
+    border:0;
+    outline:0;
+    font-size:100%;
+    vertical-align:baseline;
+    background:transparent;
+}
+
+body {
+    line-height:1;
+}
+
+article,aside,details,figcaption,figure,
+footer,header,hgroup,menu,nav,section {
+    display:block;
+}
+
+nav ul {
+    list-style:none;
+}
+
+blockquote, q {
+    quotes:none;
+}
+
+blockquote:before, blockquote:after,
+q:before, q:after {
+    content:'';
+    content:none;
+}
+
+a {
+    margin:0;
+    padding:0;
+    font-size:100%;
+    vertical-align:baseline;
+    background:transparent;
+}
+
+/* change colours to suit your needs */
+ins {
+    background-color:#ff9;
+    color:#000;
+    text-decoration:none;
+}
+
+/* change colours to suit your needs */
+mark {
+    background-color:#ff9;
+    color:#000;
+    font-style:italic;
+    font-weight:bold;
+}
+
+del {
+    text-decoration: line-through;
+}
+
+abbr[title], dfn[title] {
+    border-bottom:1px dotted;
+    cursor:help;
+}
+
+table {
+    border-collapse:collapse;
+    border-spacing:0;
+}
+
+/* change border colour to suit your needs */
+hr {
+    display:block;
+    height:1px;
+    border:0;
+    border-top:1px solid #cccccc;
+    margin:1em 0;
+    padding:0;
+}
+
+input, select {
+    vertical-align:middle;
+}
+
+/*
+theme style
+*/
+header {
+  background: rgba(35, 40, 45, 1);
+}
+footer {
+  background: #ebebeb;
+}
+header::before,
+header::after,
+footer::before,
+footer::after {
+  content: "";
+  display: table;
+}
+section {
+  margin: 20px auto;
+}
+
+.gutter {
+  padding: 0 20px;
+}
+
+.site-logo {
+  display: flex;
+  flex-direction: column;
+  margin: 20px;
+}
+.site-logo .site-logo__title {
+  color: #fff;
+  font-size: 1.5em;
+  text-decoration: none;
+}
+.site-logo .site-logo__description {
+  margin-top: 0.5em;
+  color: #fff;
+}
+
+.static-pages {
+  margin: 50px auto;
+  list-style: none;
+}
+.static-pages .page_item {
+  margin: 10px auto;
+}
+.static-pages .page_item a {
+  color: #333;
+  text-decoration: none;
+}
+
+.copyright {
+  display: block;
+  margin: 1em auto;
+  color: #505050;
+  font-size: 0.8em;
+  /* text-align: center; */
+  text-indent: 1em;
+}
+
+.hero {
+  /* height: 85vh; */
+  padding: 30vh 0;
+  position: relative;
+  overflow: hidden;
+  color: #fff;
+  font-family: "New York Midium", serif;
+  text-shadow: 0 0 3px #555;
+}
+.hero::before {
+  content: "";
+  display: block;
+  position: absolute;
+  top: -2px;
+  right: -2px;
+  bottom: -2px;
+  left: -2px;
+  z-index: -1;
+  background: url("assets/images/cover.jpg");
+  background-size: cover;
+  filter: grayscale(0) blur(2px);
+}
+.hero h1 {
+  font-size: 3.5em;
+  text-indent: 0.5em;
+}
+.hero p {
+  margin-top: 0.5em;
+  font-size: 2em;
+  text-indent: 0.875em;
+}
+
+.content {
+  display: flex;
+  flex-wrap: wrap;
+  padding: 10px;
+}
+.content--nowrap {
+  flex-wrap: nowrap;
+  justify-content: space-around;
+}
+@media screen and (min-width: 768px) {
+  .content {
+    width: 748px;
+    margin: 0 auto;
+  }
+}
+
+.post {
+  width: 50%;
+  position: relative;
+}
+@media screen and (min-width: 768px) {
+  .post {
+    width: 374px;
+  }
+}
+.post::before {
+  content: "";
+  display: block;
+  padding-top: 100%;
+}
+.post a {
+  position: absolute;
+  top: 10px;
+  right: 10px;
+  bottom: 10px;
+  left: 10px;
+  border: 1px solid #3ddd7f;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  text-decoration: none;
+}
+.post a:hover {
+  border-width: 3px;
+  font-weight: bold;
+}
+
+.container {
+  min-height: calc(100vh - 15vh - 300px);
+  padding: 0 5%;
+}
+.container::before,
+.container::after {
+  content: "";
+  display: table;
+}
+.container h1 {
+  margin: 30px 0;
+  font-size: 3em;
+  text-align: center;
+}
+.container h2 {
+  margin: 20px 0;
+  font-size: 2em;
+  text-align: center;
+}
+.container p {
+  margin: 10px 0;
+}
+
+.post-nav {
+  display: flex;
+  justify-content: space-evenly;
+  margin: 50px 0;
+  list-style: none;
+}
