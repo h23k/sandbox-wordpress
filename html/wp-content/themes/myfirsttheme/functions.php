@@ -2,16 +2,16 @@
 // add_theme_support('post-thumbnails');
 
 
-// カスタム投稿(my_news)
-function create_my_news_post_type() {
-  register_post_type('my_news',
+function create_my_post_type() {
+  // カスタム投稿(my_qa)
+  register_post_type('my_qa',
     array(
       'labels' => array(
-          'name' => 'ニュース'
-        , 'singular_name' => 'ニュース'
-        , 'all_items' => 'ニュース一覧'
+          'name' => 'お問い合わせ'
+        , 'singular_name' => 'お問い合わせ'
+        , 'all_items' => 'お問い合わせ一覧'
       )
-      , 'description' => 'ニュースの投稿'
+      , 'description' => 'お問い合わせの投稿'
       , 'public' => true
       , 'show_in_rest' => true
       , 'menu_position' => 5
@@ -19,98 +19,128 @@ function create_my_news_post_type() {
           'title'
         , 'editor'
         // , 'thumbnail'
-        // , 'page-attribute'
+        , 'page-attribute'
         , 'revisions'
       )
-      // , 'hierarchical' => true
+      , 'hierarchical' => true
       , 'taxonomies' => array(
-          'my_brand'
-        , 'my_location'
+          'my_category'
+        , 'my_tag'
       )
       , 'has_archive' => true
     )
   );
 }
-add_action('init', 'create_my_news_post_type');
+add_action('init', 'create_my_post_type');
 
 
-// カスタム分類(my_brand, my_location)
-function create_my_brand_taxonomy() {
+function create_my_taxonomy() {
+  // カスタム分類(my_category)
   register_taxonomy(
-    'my_brand'
-    , array('my_news')
+    'my_category'
+    , array('my_qa')
     , array(
       'labels' => array(
-          'name' => 'ブランド'
-        , 'singular_name' => 'ブランド'
-        , 'add_new_item' => '新規ブランドを追加'
-        , 'edit_item' => 'ブランドの編集'
-        , 'update_item' => 'ブランドを更新'
-        , 'search_items' => 'ブランドを検索'
-        , 'not_found' => 'ブランドが見つかりませんでした。'
+          'name' => 'カテゴリー'
+        , 'singular_name' => 'カテゴリー'
+        , 'add_new_item' => '新規カテゴリーを追加'
+        , 'edit_item' => 'カテゴリーの編集'
+        , 'update_item' => 'カテゴリーを更新'
+        , 'parent_item' => '親カテゴリー'
+        , 'search_items' => 'カテゴリーを検索'
+        , 'not_found' => 'カテゴリーが見つかりませんでした。'
       )
-      , 'description' => 'ブランドの分類'
-      , 'public' => true
-      , 'show_in_rest' => true
-      , 'show_admin_column' => true
-    )
-  );
-
-  register_taxonomy(
-    'my_location'
-    , array('my_news')
-    , array(
-      'labels' => array(
-          'name' => '地域'
-        , 'singular_name' => '地域'
-        , 'add_new_item' => '新規地域を追加'
-        , 'edit_item' => '地域の編集'
-        , 'update_item' => '地域を更新'
-        , 'parent_item' => '親地域'
-        , 'search_items' => '地域を検索'
-        , 'not_found' => '地域が見つかりませんでした。'
-      )
-      , 'description' => '地域の分類'
+      , 'description' => 'カテゴリーの分類'
       , 'public' => true
       , 'show_in_rest' => true
       , 'show_admin_column' => true
       , 'hierarchical' => true
     )
   );
+
+  // カスタム分類(my_tag)
+  register_taxonomy(
+    'my_tag'
+    , array('my_qa')
+    , array(
+      'labels' => array(
+          'name' => 'タグ'
+        , 'singular_name' => 'タグ'
+        , 'add_new_item' => '新規タグを追加'
+        , 'edit_item' => 'タグの編集'
+        , 'update_item' => 'タグを更新'
+        , 'search_items' => 'タグを検索'
+        , 'not_found' => 'タグが見つかりませんでした。'
+      )
+      , 'description' => 'タグの分類'
+      , 'public' => true
+      , 'show_in_rest' => true
+      , 'show_admin_column' => true
+    )
+  );
 }
-add_action('init', 'create_my_brand_taxonomy', 0);
+add_action('init', 'create_my_taxonomy', 0);
 // $taxonomies = get_taxonomies();
 // foreach ($taxonomies as $taxonomiy) {
 //   error_log($taxonomiy);
 // }
 
 
-// カスタム項目
-function create_my_news_fields() {
+function create_my_fields() {
+  // カスタム項目(my_status_field)
   add_meta_box(
-      'my_copy_field'
-    , 'キャッチコピー'
-    , 'insert_my_copy_fields'
-    , 'my_news'
+      'my_user_field'
+    , 'お問い合わせ者'
+    , 'insert_my_user_fields'
+    , 'my_qa'
+    , 'normal'
+  );
+
+  // カスタム項目(my_status_field)
+  add_meta_box(
+      'my_status_field'
+    , 'ステータス'
+    , 'insert_my_status_fields'
+    , 'my_qa'
     , 'normal'
   );
 }
-function insert_my_copy_fields() {
+
+function insert_my_user_fields() {
   global $post;
 
-  // echo '<div class="wp-block editor-post-title__block">';
-  echo '<textarea class="" name="my_copy_field" placeholder="キャッチコピーを追加" rows="1" style="overflow:hidden; resize:none;">';
-  echo get_post_meta($post->ID, 'my_copy_field', true);
-  echo '</textarea>';
-  // echo '</div>';
+  echo '<input type="text" class="" name="my_user_field" value="'. get_post_meta($post->ID, 'my_user_field', true) . '">';
 }
-add_action('admin_menu', 'create_my_news_fields');
 
-function save_my_news_fields($post_id) {
-  if (!empty($_POST['my_copy_field'])) {
-    update_post_meta($post_id, 'my_copy_field', $_POST['my_copy_field']);
+function insert_my_status_fields() {
+  global $post;
+  $status = get_post_meta($post->ID, 'my_status_field', true);
+
+  $checked = array('', '', '');
+  switch ($status) {
+    case 'hang':
+      $checked[1] = ' checked';
+      break;
+    case 'fixed':
+      $checked[2] = ' checked';
+      break;
+    default:
+      $checked[0] = ' checked';
+      break;
+  }
+  // error_log('my_status: ' . $status . ' => ' . print_r($checked, true));
+
+  echo '<label><input type="radio" class="" name="my_status_field" value="unans"' . $checked[0] . '>未回答</label>';
+  echo '<label><input type="radio" class="" name="my_status_field" value="hang"' . $checked[1] . '>未解決</label>';
+  echo '<label><input type="radio" class="" name="my_status_field" value="fixed"' . $checked[2] . '>解決済</label>';
+}
+add_action('admin_menu', 'create_my_fields');
+
+function save_my_status_fields($post_id) {
+  if (!empty($_POST['my_status_field'])) {
+    update_post_meta($post_id, 'my_status_field', $_POST['my_status_field']);
   } else {
-    delete_post_meta($post_id, 'my_copy_field');
+    delete_post_meta($post_id, 'my_status_field');
   }
 }
-add_action('save_post', 'save_my_news_fields');
+add_action('save_post', 'save_my_status_fields');
