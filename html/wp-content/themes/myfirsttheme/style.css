@@ -123,6 +123,9 @@ input, select {
 /*
 theme style
 */
+* {
+  box-sizing: border-box;
+}
 header {
   background: rgba(35, 40, 45, 1);
 }
