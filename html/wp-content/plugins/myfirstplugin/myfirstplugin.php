@@ -31,6 +31,9 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 Copyright 2020 h23k.
 */
 
+// google/apiclient:^2.0
+require_once plugin_dir_path(__FILE__) . 'vendor/autoload.php';
+
 if (!class_exists('My_First_Plugin')) {
   Class My_First_Plugin {
     public function get_hello() {
@@ -60,31 +63,142 @@ if (!class_exists('My_First_Plugin')) {
       echo '<script type="text/javascript">';
       echo 'myCalendar.sayHello();';
       echo 'const holidays = ' . $this->get_holidays() . ';';
+      // echo 'const holidays = ' . $this->get_holidays_curl() . ';';
+      // echo 'const holidays = ' . $this->get_holidays_gcal() . ';';
       echo 'myCalendar.setHoliday(holidays);';
       echo '</script>';
     }
 
-    function get_holidays() {
-      $url = 'https://www8.cao.go.jp/chosei/shukujitsu/syukujitsu.csv';
-      $ca = plugin_dir_path(__FILE__) . 'cacert.pem';
+    function set_array($holidays, $delimiter, $date, $str) {
+      $ymd = preg_split($delimiter, $date);
+      if (count($ymd) !== 3) {
+        error_log($date);
+        return $holidays;
+      }
+      $y = ltrim($ymd[0], '0');
+      $m = ltrim($ymd[1], '0');
+      $d = ltrim($ymd[2], '0');
 
+      if (array_key_exists($y, $holidays)) {
+        $months = $holidays[$y];
+        if (array_key_exists($m, $months)) {
+          $holidays[$y][$m][$d] = $str;
+        } else {
+          $holidays[$y][$m] = array(
+            $d => $str
+          );
+        }
+      } else {
+        $holidays[$y] = array(
+          $m => array(
+            $d => $str
+          )
+        );
+      }
+
+      return $holidays;
+    }
+
+    function get_holidays() {
+      $timeMin = new DateTime('-2 month');
+      $timeMax = new DateTime('+1 month');
+
+      $url = 'https://www8.cao.go.jp/chosei/shukujitsu/syukujitsu.csv';
+      $file = new NoRewindIterator(new SplFileObject( $url ));
+
+      $holidays = array();
+      foreach ($file as $line_num => $line) {
+        $line = preg_replace('/\R/', '', $line);
+        $line = mb_convert_encoding($line, 'utf-8', 'sjis-win');
+
+        $columns = preg_split('/,/', $line);
+        if (count($columns) !== 2) {
+          error_log($line);
+          continue;
+        }
+        if (!strtotime($columns[0])) {
+          error_log($columns[0]);
+          continue;
+        }
+        $date = new DateTime($columns[0]);
+        if ($date < $timeMin || $timeMax < $date) {
+          continue;
+        }
+
+        $holidays = $this->set_array($holidays, '/\//', $columns[0], $columns[1]);
+      }
+
+      return json_encode($holidays, JSON_UNESCAPED_UNICODE);
+    }
+
+    // php curl
+    function get_holidays_curl() {
+      $timeMin = new DateTime('-2 month');
+      $timeMax = new DateTime('+1 month');
+
+      $url = 'https://www8.cao.go.jp/chosei/shukujitsu/syukujitsu.csv';
       $ch = curl_init($url);
-      // curl_setopt($ch, CURLOPT_URL, $url);
       curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
-      curl_setopt($ch, CURLOPT_SSL_VERIFYPEER, true);
-      curl_setopt($ch, CURLOPT_CAINFO, $ca);
-      // $result = curl_exec($ch);
+      $data = curl_exec($ch);
       // error_log(curl_errno($ch));
       // error_log(print_r(curl_getinfo($ch), true));
-      $result = 1;
       curl_close($ch);
 
-      $str = '';
-      if (!empty($result)) {
-        // curlで取れないので。。。
-        $str = '"2020": {"4": {"29": "昭和の日"}, "5": {"3": "憲法記念日", "4": "みどりの日", "5": "こどもの日", "6": "振替休日"}}';
+      $holidays = array();
+      if (!empty($data)) {
+        $data = mb_convert_encoding($data, 'utf-8', 'sjis-win');
+        $data = preg_split('/\R/', $data);
+
+        foreach ($data as $line) {
+          $columns = preg_split('/,/', $line);
+          if (count($columns) !== 2) {
+            error_log($line);
+            continue;
+          }
+          if (!strtotime($columns[0])) {
+            error_log($columns[0]);
+            continue;
+          }
+          $date = new DateTime($columns[0]);
+          if ($date < $timeMin || $timeMax < $date) {
+            continue;
+          }
+
+          $holidays = $this->set_array($holidays, '/\//', $columns[0], $columns[1]);
+        }
       }
-      return '{' . $str . '}';
+
+      return json_encode($holidays, JSON_UNESCAPED_UNICODE);
+    }
+
+    // Google Calendar API
+    function get_holidays_gcal() {
+      $timeMin = new DateTime('-2 month');
+      $timeMax = new DateTime('+1 month');
+
+      $credentials = plugin_dir_path(__FILE__) . 'credentials.json';
+      $calendarId = 'ja.japanese#holiday@group.v.calendar.google.com';
+
+      $client = new Google_Client();
+      $client->setApplicationName('My WordPress');
+      $client->setScopes(Google_Service_Calendar::CALENDAR_READONLY);
+      $client->setAuthConfig($credentials);
+
+      $service = new Google_Service_Calendar($client);
+      $optParams = array(
+          'orderBy' => 'startTime'
+        , 'singleEvents' => true
+        , 'timeMin' => $timeMin->format('c')
+        , 'timeMax' => $timeMax->format('c')
+      );
+      $events = $service->events->listEvents($calendarId, $optParams);
+
+      $holidays = array();
+      foreach ($events->getItems() as $event) {
+        $holidays = $this->set_array($holidays, '/-/', $event->start->date, $event->getSummary());
+      }
+
+      return json_encode($holidays, JSON_UNESCAPED_UNICODE);
     }
   }
   $MFP = new My_First_Plugin();
