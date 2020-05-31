@@ -104,7 +104,12 @@ if (!class_exists('My_First_Plugin')) {
       $timeMax = new DateTime('+1 month');
 
       $url = 'https://www8.cao.go.jp/chosei/shukujitsu/syukujitsu.csv';
-      $file = new NoRewindIterator(new SplFileObject( $url ));
+      $ctx = stream_context_create([
+        'ssl' => array(
+          'ciphers' => 'TLSv1'
+        )
+      ]);
+      $file = new NoRewindIterator(new SplFileObject($url, 'r', false, $ctx));
 
       $holidays = array();
       foreach ($file as $line_num => $line) {
@@ -137,15 +142,17 @@ if (!class_exists('My_First_Plugin')) {
       $timeMax = new DateTime('+1 month');
 
       $url = 'https://www8.cao.go.jp/chosei/shukujitsu/syukujitsu.csv';
+
       $ch = curl_init($url);
       curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
+      curl_setopt($ch, CURLOPT_SSL_CIPHER_LIST, 'TLSv1');
       $data = curl_exec($ch);
-      // error_log(curl_errno($ch));
-      // error_log(print_r(curl_getinfo($ch), true));
+      $errno = curl_errno($ch);
+      $info = curl_getinfo($ch);
       curl_close($ch);
 
       $holidays = array();
-      if (!empty($data)) {
+      if (!empty($data) && $errno === 0) {
         $data = mb_convert_encoding($data, 'utf-8', 'sjis-win');
         $data = preg_split('/\R/', $data);
 
@@ -166,6 +173,9 @@ if (!class_exists('My_First_Plugin')) {
 
           $holidays = $this->set_array($holidays, '/\//', $columns[0], $columns[1]);
         }
+      } else {
+        error_log($errno);
+        error_log(print_r($info, true));
       }
 
       return json_encode($holidays, JSON_UNESCAPED_UNICODE);
