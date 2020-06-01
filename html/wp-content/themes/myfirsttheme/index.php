@@ -5,17 +5,42 @@
   <p><?php bloginfo('description'); ?></p>
 </div>
 
+<?php if (have_posts()) : ?>
 <section>
+  <div class="header">
+    <h2>投稿</h2>
+  </div>
   <div class="content">
-  <?php if (have_posts()) : ?>
-    <?php while (have_posts()) : ?>
-      <?php the_post(); ?>
-      <div class="post">
-        <a href="<?php the_permalink(); ?>"><?php the_title(); ?></a>
-      </div>
-    <?php endwhile; ?>
-  <?php endif; ?>
+  <?php while (have_posts()) : ?>
+    <?php the_post(); ?>
+    <div class="post">
+      <a href="<?php the_permalink(); ?>"><?php the_title(); ?></a>
+    </div>
+  <?php endwhile; ?>
   </div>
 </section>
+<?php endif; ?>
+
+<?php
+$args = array(
+  'post_type' => 'my_qa'
+);
+$qa_posts = get_posts($args);
+?>
+<?php if ($qa_posts) : ?>
+<section>
+  <div class="header">
+    <h2>お問い合わせ</h2>
+  </div>
+  <div class="content">
+  <?php foreach ($qa_posts as $post) : ?>
+    <?php setup_postdata($post); ?>
+    <div class="post">
+      <a href="<?php the_permalink(); ?>"><?php the_title(); ?></a>
+    </div>
+  <?php endforeach; ?>
+  </div>
+</section>
+<?php endif; ?>
 
 <?php get_footer(); ?>

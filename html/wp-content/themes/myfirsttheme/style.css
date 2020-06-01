@@ -123,6 +123,10 @@ input, select {
 /*
 theme style
 */
+* {
+  box-sizing: border-box;
+}
+
 header {
   background: rgba(35, 40, 45, 1);
 }
@@ -212,6 +216,10 @@ section {
   text-indent: 0.875em;
 }
 
+.header {
+  margin: 20px auto 0;
+  padding: 0 10px;
+}
 .content {
   display: flex;
   flex-wrap: wrap;
@@ -222,9 +230,14 @@ section {
   justify-content: space-around;
 }
 @media screen and (min-width: 768px) {
+  .header {
+    padding: 0 20px;
+  }
+  .header,
   .content {
     width: 748px;
-    margin: 0 auto;
+    margin-right: auto;
+    margin-left: auto;
   }
 }
 
