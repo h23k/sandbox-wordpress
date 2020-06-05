@@ -1,9 +1,7 @@
-<?php
-get_header();
+<?php get_header(); ?>
 
-<p>
-Sorry.<br>
-Not Found.
-</p>
+<div class="container">
+  <p>Sorry.<br>Not Found.</p>
+</div>
 
-get_footer();
+<?php get_footer(); ?>
