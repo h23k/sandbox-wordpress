@@ -7,6 +7,12 @@ function myfirsttheme_register_styles() {
 }
 add_action('wp_enqueue_scripts', 'myfirsttheme_register_styles');
 
+function myfirsttheme_register_scripts() {
+  $theme_version = '0.1';
+  wp_enqueue_script('myfirsttheme-script', get_template_directory_uri() . '/assets/js/script.js', array(), $theme_version);
+}
+add_action('wp_footer', 'myfirsttheme_register_scripts');
+
 function create_my_post_type() {
   // カスタム投稿(my_qa)
   register_post_type('my_qa',
