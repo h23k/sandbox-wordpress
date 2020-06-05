@@ -1,6 +1,11 @@
 <?php
 // add_theme_support('post-thumbnails');
 
+function myfirsttheme_register_styles() {
+  $theme_version = '0.1';
+  wp_enqueue_style('myfirsttheme-style', get_stylesheet_uri(), array(), $theme_version);
+}
+add_action('wp_enqueue_scripts', 'myfirsttheme_register_styles');
 
 function create_my_post_type() {
   // カスタム投稿(my_qa)
