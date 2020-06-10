@@ -48,11 +48,5 @@ $qa_posts = get_posts($args);
     <div id="calendar"></div>
   </div>
 </section>
-<section>
-  <div class="container">
-    <h2><?php myfirstplugin_say_hello(); ?></h2>
-    <div id="calendar"></div>
-  </div>
-</section>
 
 <?php get_footer(); ?>
