@@ -1,0 +1,89 @@
+#calendar {
+  user-select: none;
+}
+
+#calendar .ym {
+  padding: 10px;
+  text-align: center;
+}
+#calendar .ym .year {
+  font-size: 1.5em;
+}
+#calendar .ym .month {
+  font-size: 1.5em;
+}
+
+#calendar .weeks,
+#calendar .days {
+  display: flex;
+  flex-wrap: wrap;
+  border-top: 1px solid #ccc;
+  border-left: 1px solid #ccc;
+}
+
+#calendar .week,
+#calendar .day {
+  width: calc(100% / 7);
+  border-right: 1px solid #ccc;
+  border-bottom: 1px solid #ccc;
+  position: relative;
+}
+#calendar .week {
+  height: 2em;
+  border-bottom: none;
+}
+#calendar .day::before {
+  content: "";
+  display: block;
+  width: 100%;
+  padding-top: 100%;
+}
+
+#calendar .week span,
+#calendar .day span {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+#calendar .sat {
+  color: blue;
+}
+#calendar .sun,
+#calendar .holiday {
+  color: red;
+}
+#calendar .today {
+  font-size: 1.2em;
+  font-weight: bold;
+}
+
+#calendar .sat span {
+  background: #eef;
+}
+#calendar .sun span,
+#calendar .holiday span {
+  background: #fee;
+}
+/* #calendar .today span {
+  background: #efe;
+} */
+#calendar .last-month span,
+#calendar .next-month span,
+#calendar .last-month b,
+#calendar .next-month b {
+  opacity: 0.3;
+}
+#calendar .day b {
+  position: absolute;
+  bottom: 5px;
+  left: 0;
+  width: 100%;
+  font-size: 0.7em;
+  text-align: center;
+}
